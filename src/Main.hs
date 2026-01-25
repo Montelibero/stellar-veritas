@@ -54,7 +54,6 @@ confirm = do
   else pure True
 
 b32 = encodeBase32 . unLengthArray
---b64 = T.decodeLatin1 . B64.encode . unLengthArray
 utf8s = T.decodeUtf8Lenient . unLengthArray
 prettyKey x = encodeKey EncodingAccount $ unLengthArray x
 prettyAmount amount = T.show ((fromIntegral amount) / 1e7)
@@ -129,7 +128,7 @@ instance Pretty OperationBody where
 --  pretty (OperationBody'REVOKE_SPONSORSHIP x) = pretty x
 --  pretty (OperationBody'CLAWBACK x) = pretty x
 --  pretty (OperationBody'CLAWBACK_CLAIMABLE_BALANCE x) = pretty x
---  pretty (OperationBody'SET_TRUST_LINE_FLAGS x) = pretty x
+  pretty (OperationBody'SET_TRUST_LINE_FLAGS x) = pretty x
 --  pretty (OperationBody'LIQUIDITY_POOL_DEPOSIT x) = pretty x
 --  pretty (OperationBody'LIQUIDITY_POOL_WITHDRAW x) = pretty x
   pretty x = T.show x
@@ -157,6 +156,12 @@ instance Pretty SignerKey where
 
 instance Pretty CreateAccountOp where
   pretty (CreateAccountOp dest bal) = T.concat ["Create account ", pretty dest, " with starting balance ", T.show bal]
+
+instance Pretty SetTrustLineFlagsOp where
+  pretty (SetTrustLineFlagsOp trustor ass clearFlags setFlags)
+    | setFlags == 1 && clearFlags == 0 = T.concat ["Authorize ", pretty trustor, " ops with asset ", pretty ass]
+    | setFlags == 0 && clearFlags == 1 = T.concat ["Clear authorization ", pretty trustor, " ops with asset ", pretty ass]
+    | otherwise = T.concat ["Set trust line of ", pretty trustor, " to asset ", pretty ass, ": set flags ", T.show setFlags, ", clear flags ", T.show clearFlags]
 
 instance Pretty ChangeTrustOp where
   pretty (ChangeTrustOp line limit) = T.concat ["Trust ", pretty line, " up to ", T.show limit]
