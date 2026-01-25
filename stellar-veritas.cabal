@@ -1,0 +1,49 @@
+cabal-version:       3.0
+name:                stellar-veritas
+-- semver
+version:             0
+synopsis:            Stellar transaction signer and pretty-printer
+description:         The aim is to create a trustworthy Stellar transaction signer (and, by necessity, a pretty printer) using only Glasgow Haskell compiler code and Haskell Core libraries, reducing the possible supply chain attack surface.
+license:             AGPL-3.0-only
+license-file:        COPYING
+author:              La Ancapo
+category:            Network, Stellar
+build-type:          Simple
+tested-with:         GHC == 9.12.3
+
+executable stellar-veritas
+  main-is:             Main.hs
+  ghc-options:         -W -Wcompat -fno-warn-tabs -g
+  other-modules:
+  build-depends:       base >= 4.9 && < 5,
+                       text >= 1.2.4.1 && < 2.2,
+                       bytestring ^>= 0.12,
+                       directory ^>= 1.3.9.0,
+                       vector ^>= 0.13.2.0,
+                       time ^>= 1.14,
+                       containers ^>= 0.7,
+                       array ^>= 0.5.8.0,
+                       binary ^>= 0.8.9.3,
+                       deepseq ^>= 1.5.1.0,
+                       primitive ^>= 0.9.1.0,
+                       template-haskell ^>= 2.23.0.0,
+                       filepath ^>= 1.5.4.0,
+                       ghc-prim ^>= 0.13.0,
+  hs-source-dirs:      src, bundled
+  default-language:    Haskell2010
+  other-extensions:
+    BangPatterns
+    CPP
+    DeriveDataTypeable
+    FlexibleContexts
+    FlexibleInstances
+    GADTs
+    KindSignatures
+    MagicHash
+    MultiParamTypeClasses
+    ScopedTypeVariables
+    Trustworthy
+    TypeOperators
+    UnliftedFFITypes
+  c-sources:          bundled/cbits/ref10/ed25519.c
+  include-dirs:       bundled/cbits/ref10 bundled/cbits/ref10/include

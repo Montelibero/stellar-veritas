@@ -1,0 +1,15 @@
+Stellar Veritas is released under the terms of GNU AFFERO GENERAL PUBLIC LICENSE Version 3.
+
+Following bundled libraries are released under their corresponding licenses as published on Hackage:
+base32
+base64-bytestring
+cereal
+ed25519
+scientific
+stellar-sdk
+stellar-horizon
+SHA
+integer-logarithms
+cryptonite
+memory
+basement
