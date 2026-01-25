@@ -2,22 +2,19 @@ cabal-version:       3.0
 name:                stellar-veritas
 -- semver
 version:             0
-synopsis:            Stellar transaction  signer and pretty-printer
--- description:
+synopsis:            Stellar transaction signer and pretty-printer
+description:         The aim is to create a trustworthy Stellar transaction signer (and, by necessity, a pretty printer) using only Glasgow Haskell compiler code and Haskell Core libraries, reducing the possible supply chain attack surface.
 license:             AGPL-3.0-only
-license-file:        LICENSE
--- author:
--- maintainer:
--- copyright:
+license-file:        COPYING
+author:              La Ancapo
 category:            Network, Stellar
 build-type:          Simple
 tested-with:         GHC == 9.12.3
 
 executable stellar-veritas
   main-is:             Main.hs
-  ghc-options:         -W -Wcompat -fno-warn-tabs -g
+  ghc-options:         -W -Wcompat -fno-warn-tabs -rtsopts=ignoreAll -optl-Wl,-s
   other-modules:
-  -- other-extensions:
   build-depends:       base >= 4.9 && < 5,
                        text >= 1.2.4.1 && < 2.2,
                        bytestring ^>= 0.12,
