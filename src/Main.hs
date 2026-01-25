@@ -4,11 +4,9 @@ module Main where
 
 import Control.Monad
 import qualified Data.ByteString as B
-import           Data.ByteString.Base32 (decodeBase32, encodeBase32)
+import           Data.ByteString.Base32 (encodeBase32)
 import qualified Data.ByteString.Base64 as B64
 import qualified Data.ByteString.Char8 as BC8
-import Data.Coerce
-import Data.Char
 import Data.List
 import Data.Maybe
 import qualified Data.Text as T
