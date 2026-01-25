@@ -31,7 +31,7 @@ main = do
   let parsedTransaction = case xdrDeserialize transaction :: Either String TransactionEnvelope of
         Left err -> error err
         Right x -> x
-  T.putStrLn $ pretty parsedTransaction
+  T.hPutStrLn stderr $ pretty parsedTransaction
   proceed <- confirm
   when proceed $ do
     key <- getPrivateKey
