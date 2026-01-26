@@ -13,6 +13,7 @@ tested-with:         GHC == 9.12.3
 
 executable stellar-veritas
   main-is:             Main.hs
+  CPP-options:         -DWITH_BYTESTRING_SUPPORT
   ghc-options:         -W -Wcompat -Wno-missing-home-modules -fno-warn-tabs -rtsopts=ignoreAll -optl-Wl,-s
   other-modules:
   build-depends:       base >= 4.9 && < 5,
@@ -46,4 +47,12 @@ executable stellar-veritas
     TypeOperators
     UnliftedFFITypes
   c-sources:          bundled/cbits/ref10/ed25519.c
-  include-dirs:       bundled/cbits/ref10 bundled/cbits/ref10/include
+                      bundled/cbits/argon2/argon2.c
+                      bundled/cbits/blake2/sse/blake2s.c
+                      bundled/cbits/blake2/sse/blake2sp.c
+                      bundled/cbits/blake2/sse/blake2b.c
+                      bundled/cbits/blake2/sse/blake2bp.c
+  include-dirs:       bundled/cbits/ref10
+                      bundled/cbits/ref10/include
+                      bundled/cbits/argon2
+                      bundled/cbits/blake2/sse
