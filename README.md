@@ -19,3 +19,17 @@ To encrypt your key, run `cabal run stellar-veritas -- encrypt` (or just `stella
 The project contains the code of trimmed-down non-core dependencies, mainly cryptographic libraries. To avoid using bundled libraries (to build against the current Hackage), do the same in the `src` directory. To further reduce the amount of code under audit, weeder can be used, although the utility is dubious.
 
 Key encryption is implemented via XOR with Argon2i KDF with an adaptive iteration count.
+
+### Bundled libraries
+
+* base32 0.4
+* base64-bytestring 1.2.1.0
+* cereal 0.5.8.3
+* ed25519 0.0.5.0
+* scientific 0.3.8.1
+* SHA 1.6.4.4
+* integer-logarithms 1.0.5
+* cryptonite 0.30
+* memory 0.18.0
+* basement 0.0.16
+* stellar-sdk & stellar-horizon git+https://github.com/cblp/haskell-stellar-sdk 756e3aa04c28fde502e239fac9da3dd1d1ee31bb
