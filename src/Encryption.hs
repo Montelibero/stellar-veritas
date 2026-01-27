@@ -41,17 +41,18 @@ xorWithKey key bs
   | B.null key = error "key must not be empty"
   | otherwise  = B.pack $ B.zipWith xor bs key
 
+-- as recommended by RFC9106
+argonOptions = defaultOptions { variant = Argon2id }
+
 -- format: E[16-byte salt][4-byte big-endian iterations][ciphertext]
 encryptData :: ByteString -> IO ByteString
 encryptData privkey = do
   iterationTime <- measureIteration
-  print iterationTime
-  let iterations = ceiling $ 1 / iterationTime
-  print iterations
+  let minIterations = 3 -- as recommended by RFC9106
+  let iterations = max minIterations $ ceiling $ 1 / iterationTime
   salt <- getEntropy 16 :: IO ByteString
-  --let password = "password" :: ByteString
   password <- getPassword
-  key <- throwCryptoErrorIO $ hash defaultOptions { iterations = iterations } password salt 56 :: IO ByteString
+  key <- throwCryptoErrorIO $ hash argonOptions { iterations = iterations } password salt 56 :: IO ByteString
   let ciphertext = xorWithKey key privkey
   -- encode iterations as Word32 big-endian
   let iterWord :: Word32
@@ -67,7 +68,7 @@ decryptData contents = do
   let (salt, rest) = B.splitAt 16 contents
       (iterBytes, ciphertext) = B.splitAt 4 rest
       iterations = runGet getWord32be (BL.fromStrict iterBytes)
-  key <- throwCryptoErrorIO $ hash defaultOptions { iterations = iterations } password salt 56 :: IO ByteString
+  key <- throwCryptoErrorIO $ hash argonOptions { iterations = iterations } password salt 56 :: IO ByteString
   let plaintext = xorWithKey key ciphertext
   case B.head plaintext of
     0x53 -> pure plaintext
