@@ -4,7 +4,7 @@ The aim is to create a trustworthy Stellar transaction signer (and, by necessity
 
 ## Installation and usage
 
-To build and run it, install `cabal-install` and use `cabal run`. The program expects your transaction coming from the standard input, and your private (S...) key residing in `$HOME/~/.stellar-veritas-key`. It will produce the decoded transaction description afterwards, with simple descriptions of the most popular operations. When it is ran from an interactive terminal, it will ask for a confirmation before signing the transaction.
+To build and run it, install `cabal-install` and use `cabal run`. The program expects your transaction coming from the standard input, and your private (S...) key residing in `~/.stellar-veritas-key`. It will produce the decoded transaction description afterwards, with simple descriptions of the most popular operations. When it is ran from an interactive terminal, it will ask for a confirmation before signing the transaction.
 
 You can put the binary (`cabal list-bin stellar-veritas` to get the path) into your `$PATH` and use it directly.
 
