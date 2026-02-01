@@ -1,4 +1,3 @@
-
 {-# LANGUAGE OverloadedStrings, Strict #-}
 
 module Pretty where
@@ -13,7 +12,9 @@ import qualified Data.Vector as V
 import Network.ONCRPC.XDR.Array
 import Network.Stellar.Keypair (encodeKey, EncodingVersion(..))
 import Network.Stellar.TransactionXdr
+import Numeric
 
+b16 = T.pack . concatMap (\x -> (if x < 16 then "0" else "") ++ showHex x "") . B.unpack . unLengthArray
 b32 = encodeBase32 . unLengthArray
 utf8s = T.decodeUtf8Lenient . unLengthArray
 prettyKey x = encodeKey EncodingAccount $ unLengthArray x
@@ -54,7 +55,7 @@ instance Pretty Transaction where
 instance Pretty Memo where
   pretty Memo'MEMO_NONE = ""
   pretty (Memo'MEMO_ID x) = T.show x
-  pretty (Memo'MEMO_HASH x) = T.show x
+  pretty (Memo'MEMO_HASH x) = b16 x
   pretty (Memo'MEMO_RETURN x) = T.show x
   pretty (Memo'MEMO_TEXT t) = utf8s t
 
