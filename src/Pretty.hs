@@ -64,6 +64,10 @@ instance Pretty Preconditions where
   pretty (Preconditions'PRECOND_TIME (TimeBounds min max)) = T.concat ["Time ", T.show min, " to ", T.show max]
   pretty (Preconditions'PRECOND_V2 cond) = T.show cond
 
+instance Pretty ClaimPredicate where
+  pretty ClaimPredicate'CLAIM_PREDICATE_UNCONDITIONAL = "Unconditional"
+  pretty x = T.show x
+
 instance Pretty Operation where
   pretty (Operation Nothing body) = pretty body
   pretty (Operation (Just account) body) = T.concat ["As ", pretty account, " ", pretty body]
@@ -83,7 +87,7 @@ instance Pretty OperationBody where
 --  pretty (OperationBody'BUMP_SEQUENCE x) = pretty x
 --  pretty (OperationBody'MANAGE_BUY_OFFER x) = pretty x
 --  pretty (OperationBody'PATH_PAYMENT_STRICT_SEND x) = pretty x
---  pretty (OperationBody'CREATE_CLAIMABLE_BALANCE x) = pretty x
+  pretty (OperationBody'CREATE_CLAIMABLE_BALANCE x) = pretty x
 --  pretty (OperationBody'CLAIM_CLAIMABLE_BALANCE x) = pretty x
   pretty (OperationBody'BEGIN_SPONSORING_FUTURE_RESERVES (BeginSponsoringFutureReservesOp account)) = T.concat ["Sponsoring reserves for ", pretty account]
   pretty OperationBody'END_SPONSORING_FUTURE_RESERVES = "No longer sponsored reserves"
@@ -119,6 +123,9 @@ instance Pretty SignerKey where
 instance Pretty CreateAccountOp where
   pretty (CreateAccountOp dest bal) = T.concat ["Create account ", pretty dest, " with starting balance ", T.show bal]
 
+instance Pretty CreateClaimableBalanceOp where
+  pretty (CreateClaimableBalanceOp ass amount claimants) = T.concat ["Create claimable ", T.show amount, " ", pretty ass, " to ", pretty claimants]
+
 instance Pretty SetTrustLineFlagsOp where
   pretty (SetTrustLineFlagsOp trustor ass clearFlags setFlags)
     | setFlags == 1 && clearFlags == 0 = T.concat ["Authorize ", pretty trustor, " ops with asset ", pretty ass]
@@ -142,6 +149,9 @@ instance Pretty MuxedAccount where
 instance Pretty PublicKey where
   pretty (PublicKey'PUBLIC_KEY_TYPE_ED25519 x) = prettyKey x
 
+instance Pretty Claimant where
+  pretty (Claimant'CLAIMANT_TYPE_V0 acc pred) = T.concat [pretty acc, " ", pretty pred]
+
 instance Pretty Asset where
   pretty Asset'ASSET_TYPE_NATIVE = "XLM"
   pretty (Asset'ASSET_TYPE_CREDIT_ALPHANUM4 x) = pretty x
@@ -151,3 +161,9 @@ instance Pretty AlphaNum4 where
   pretty (AlphaNum4 code issuer) = T.concat [prettyAssetCode code, "-", pretty issuer]
 instance Pretty AlphaNum12 where
   pretty (AlphaNum12 code issuer) = T.concat [prettyAssetCode code, "-", pretty issuer]
+
+instance Pretty a => Pretty (LengthArray b n a) where
+  pretty x = pretty $ unLengthArray x
+
+instance Pretty a => Pretty (V.Vector a) where
+  pretty x = T.intercalate ", " $ map pretty $ V.toList x
