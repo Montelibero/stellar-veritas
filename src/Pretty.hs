@@ -92,7 +92,7 @@ instance Pretty OperationBody where
   pretty (OperationBody'BEGIN_SPONSORING_FUTURE_RESERVES (BeginSponsoringFutureReservesOp account)) = T.concat ["Sponsoring reserves for ", pretty account]
   pretty OperationBody'END_SPONSORING_FUTURE_RESERVES = "No longer sponsored reserves"
 --  pretty (OperationBody'REVOKE_SPONSORSHIP x) = pretty x
---  pretty (OperationBody'CLAWBACK x) = pretty x
+  pretty (OperationBody'CLAWBACK x) = pretty x
 --  pretty (OperationBody'CLAWBACK_CLAIMABLE_BALANCE x) = pretty x
   pretty (OperationBody'SET_TRUST_LINE_FLAGS x) = pretty x
 --  pretty (OperationBody'LIQUIDITY_POOL_DEPOSIT x) = pretty x
@@ -141,6 +141,9 @@ instance Pretty PaymentOp where
 instance Pretty ManageDataOp where
   pretty (ManageDataOp name Nothing) = T.concat ["Data ", utf8s name, " cleared"]
   pretty (ManageDataOp name (Just value)) = T.concat ["Data ", utf8s name, " = ", utf8s value]
+
+instance Pretty ClawbackOp where
+  pretty (ClawbackOp ass acc amount) = T.concat ["Clawback ", prettyAmount amount, " ", pretty ass, " from ", pretty acc]
 
 instance Pretty MuxedAccount where
   pretty (MuxedAccount'KEY_TYPE_ED25519 x) = prettyKey x
