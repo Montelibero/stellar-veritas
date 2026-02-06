@@ -124,7 +124,7 @@ instance Pretty CreateAccountOp where
   pretty (CreateAccountOp dest bal) = T.concat ["Create account ", pretty dest, " with starting balance ", T.show bal]
 
 instance Pretty CreateClaimableBalanceOp where
-  pretty (CreateClaimableBalanceOp ass amount claimants) = T.concat ["Create claimable ", T.show amount, " ", pretty ass, " to ", pretty claimants]
+  pretty (CreateClaimableBalanceOp ass amount claimants) = T.concat ["Create claimable ", prettyAmount amount, " ", pretty ass, " to ", pretty claimants]
 
 instance Pretty SetTrustLineFlagsOp where
   pretty (SetTrustLineFlagsOp trustor ass clearFlags setFlags)
