@@ -85,7 +85,7 @@ instance Pretty OperationBody where
   pretty OperationBody'INFLATION = "Inflation"
   pretty (OperationBody'MANAGE_DATA x) = pretty x
 --  pretty (OperationBody'BUMP_SEQUENCE x) = pretty x
---  pretty (OperationBody'MANAGE_BUY_OFFER x) = pretty x
+  pretty (OperationBody'MANAGE_BUY_OFFER x) = pretty x
 --  pretty (OperationBody'PATH_PAYMENT_STRICT_SEND x) = pretty x
   pretty (OperationBody'CREATE_CLAIMABLE_BALANCE x) = pretty x
 --  pretty (OperationBody'CLAIM_CLAIMABLE_BALANCE x) = pretty x
@@ -142,6 +142,12 @@ instance Pretty ManageDataOp where
   pretty (ManageDataOp name Nothing) = T.concat ["Data ", utf8s name, " cleared"]
   pretty (ManageDataOp name (Just value)) = T.concat ["Data ", utf8s name, " = ", utf8s value]
 
+instance Pretty ManageBuyOfferOp where
+  pretty (ManageBuyOfferOp sellass buyass buyamount price offerid) = T.concat ["Buy ", prettyAmount buyamount, " ", pretty buyass, " for ", pretty sellass, " price ", pretty price, " ", prettyAssetName buyass, "/", prettyAssetName sellass, if offerid == 0 then " (new offer)" else T.concat [" (update offer ", T.show offerid, ")"]]
+
+instance Pretty Price where
+  pretty (Price numerator denominator) = T.show $ fromIntegral numerator / fromIntegral denominator
+
 instance Pretty ClawbackOp where
   pretty (ClawbackOp ass acc amount) = T.concat ["Clawback ", prettyAmount amount, " ", pretty ass, " from ", pretty acc]
 
@@ -164,6 +170,10 @@ instance Pretty AlphaNum4 where
   pretty (AlphaNum4 code issuer) = T.concat [prettyAssetCode code, "-", pretty issuer]
 instance Pretty AlphaNum12 where
   pretty (AlphaNum12 code issuer) = T.concat [prettyAssetCode code, "-", pretty issuer]
+
+prettyAssetName Asset'ASSET_TYPE_NATIVE = "XLM"
+prettyAssetName (Asset'ASSET_TYPE_CREDIT_ALPHANUM4 (AlphaNum4 code _)) = prettyAssetCode code
+prettyAssetName (Asset'ASSET_TYPE_CREDIT_ALPHANUM12 (AlphaNum12 code _)) = prettyAssetCode code
 
 instance Pretty a => Pretty (LengthArray b n a) where
   pretty x = pretty $ unLengthArray x
