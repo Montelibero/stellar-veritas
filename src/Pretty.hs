@@ -76,7 +76,7 @@ instance Pretty OperationBody where
   pretty (OperationBody'CREATE_ACCOUNT x) = pretty x
   pretty (OperationBody'PAYMENT x) = pretty x
 --  pretty (OperationBody'PATH_PAYMENT_STRICT_RECEIVE x) = pretty x
---  pretty (OperationBody'MANAGE_SELL_OFFER x) = pretty x
+  pretty (OperationBody'MANAGE_SELL_OFFER x) = pretty x
 --  pretty (OperationBody'CREATE_PASSIVE_SELL_OFFER x) = pretty x
   pretty (OperationBody'SET_OPTIONS x) = pretty x
   pretty (OperationBody'CHANGE_TRUST x) = pretty x
@@ -144,6 +144,9 @@ instance Pretty ManageDataOp where
 
 instance Pretty ManageBuyOfferOp where
   pretty (ManageBuyOfferOp sellass buyass buyamount price offerid) = T.concat ["Buy ", prettyAmount buyamount, " ", pretty buyass, " for ", pretty sellass, " price ", pretty price, " ", prettyAssetName buyass, "/", prettyAssetName sellass, if offerid == 0 then " (new offer)" else T.concat [" (update offer ", T.show offerid, ")"]]
+
+instance Pretty ManageSellOfferOp where
+  pretty (ManageSellOfferOp sellass buyass sellamount price offerid) = T.concat ["Sell ", prettyAmount sellamount, " ", pretty sellass, " for ", pretty buyass, " price ", pretty price, " ", prettyAssetName sellass, "/", prettyAssetName buyass, if offerid == 0 then " (new offer)" else T.concat [" (update offer ", T.show offerid, ")"]]
 
 instance Pretty Price where
   pretty (Price numerator denominator) = T.show $ fromIntegral numerator / fromIntegral denominator
