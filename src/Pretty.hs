@@ -143,10 +143,10 @@ instance Pretty ManageDataOp where
   pretty (ManageDataOp name (Just value)) = T.concat ["Data ", utf8s name, " = ", utf8s value]
 
 instance Pretty ManageBuyOfferOp where
-  pretty (ManageBuyOfferOp sellass buyass buyamount price offerid) = T.concat ["Buy ", prettyAmount buyamount, " ", pretty buyass, " for ", pretty sellass, " price ", pretty price, " ", prettyAssetName buyass, "/", prettyAssetName sellass, if offerid == 0 then " (new offer)" else T.concat [" (update offer ", T.show offerid, ")"]]
+  pretty (ManageBuyOfferOp sellass buyass buyamount price offerid) = T.concat ["Buy ", prettyAmount buyamount, " ", pretty buyass, " for ", pretty sellass, " price ", pretty price, " ", prettyAssetName sellass, "/", prettyAssetName buyass, if offerid == 0 then " (new offer)" else T.concat [" (update offer ", T.show offerid, ")"]]
 
 instance Pretty ManageSellOfferOp where
-  pretty (ManageSellOfferOp sellass buyass sellamount price offerid) = T.concat ["Sell ", prettyAmount sellamount, " ", pretty sellass, " for ", pretty buyass, " price ", pretty price, " ", prettyAssetName sellass, "/", prettyAssetName buyass, if offerid == 0 then " (new offer)" else T.concat [" (update offer ", T.show offerid, ")"]]
+  pretty (ManageSellOfferOp sellass buyass sellamount price offerid) = T.concat ["Sell ", prettyAmount sellamount, " ", pretty sellass, " for ", pretty buyass, " price ", pretty price, " ", prettyAssetName buyass, "/", prettyAssetName sellass, if offerid == 0 then " (new offer)" else T.concat [" (update offer ", T.show offerid, ")"]]
 
 instance Pretty Price where
   pretty (Price numerator denominator) = T.show $ fromIntegral numerator / fromIntegral denominator
