@@ -20,7 +20,8 @@ executable stellar-veritas
   main-is:             Main.hs
   CPP-options:         -DWITH_BYTESTRING_SUPPORT
   ghc-options:         -W -Wcompat -Wno-missing-home-modules -fno-warn-tabs -rtsopts=ignoreAll -optl-Wl,-s
-  other-modules:
+  other-modules:       Encryption
+                       Pretty
   build-depends:       base >= 4.9 && < 5,
                        text >= 1.2.4.1 && < 2.2,
                        bytestring ^>= 0.12,
