@@ -2,6 +2,7 @@
 
 module Main where
 
+import Control.Exception
 import Control.Monad
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Base64 as B64
@@ -26,7 +27,11 @@ main = do
     _ -> sign
 
 encrypt = do
-  encryptedFile <- T.encodeUtf8 <$> getPrivateKey
+  let key = catch getPrivateKey
+        (\e -> do let err = show (e :: IOException)
+                  hPutStr stderr ("Warning: Couldn't get key from file (" ++ err ++ "), reading from stdin\n")
+                  T.getContents)
+  encryptedFile <- T.encodeUtf8 <$> key
   path <- getPrivateKeyPath
   B.writeFile path =<< encryptData encryptedFile
 
