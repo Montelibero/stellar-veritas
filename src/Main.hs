@@ -36,6 +36,8 @@ encrypt = do
   B.writeFile path =<< encryptData encryptedFile
 
 sign = do
+  -- need to fetch it now since stdin is closed after getContents
+  isTerm <- hIsTerminalDevice stdin
   transactionB64 <- B.getContents
   let transaction =  case B64.decode $ BC8.strip transactionB64 of
         Left err -> error err
@@ -44,7 +46,7 @@ sign = do
         Left err -> error err
         Right x -> x
   T.hPutStrLn stderr $ pretty parsedTransaction
-  proceed <- confirm
+  proceed <- confirm isTerm
   when proceed $ do
     key <- getPrivateKey
     let sd = S.signWithSecret key parsedTransaction
@@ -62,9 +64,8 @@ getPrivateKey = do
     0x45 -> T.decodeUtf8 <$> decryptData (B.tail file)
     _ -> error "garbled private key file"
 
-confirm :: IO Bool
-confirm = do
-  isTerm <- hIsTerminalDevice stdout
+confirm :: Bool -> IO Bool
+confirm isTerm = do
   if isTerm then do
     tty <- openFile "/dev/tty" ReadWriteMode
     hPutStr tty "Sign this transaction? [y/N]: "
