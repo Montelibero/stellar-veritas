@@ -1,0 +1,54 @@
+name: Sync Upstream
+
+on:
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-upstream
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate configuration
+        env:
+          UPSTREAM_REPOSITORY_URL: ${{ vars.UPSTREAM_REPOSITORY_URL }}
+        run: |
+          if [ -n "${UPSTREAM_REPOSITORY_URL}" ]; then
+            exit 0
+          fi
+
+          echo "Using built-in upstream URL."
+
+      - name: Configure git author
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Merge upstream into default branch
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          UPSTREAM_BRANCH: ${{ vars.UPSTREAM_BRANCH }}
+          UPSTREAM_REPOSITORY_URL: ${{ vars.UPSTREAM_REPOSITORY_URL }}
+        run: |
+          upstream_url="${UPSTREAM_REPOSITORY_URL:-https://forge.voleum.cc/la_ancapo/stellar-veritas.git}"
+          upstream_branch="${UPSTREAM_BRANCH:-$DEFAULT_BRANCH}"
+
+          git remote remove upstream || true
+          git remote add upstream "${upstream_url}"
+          git fetch upstream "${upstream_branch}"
+          git checkout "${DEFAULT_BRANCH}"
+          git merge --no-edit "upstream/${upstream_branch}"
+          git push origin "HEAD:${DEFAULT_BRANCH}"

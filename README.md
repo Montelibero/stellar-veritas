@@ -1,5 +1,8 @@
 # Stellar Veritas
 
+This repository is maintained as a fork.
+Original upstream repository: <https://forge.voleum.cc/la_ancapo/stellar-veritas>.
+
 The aim is to create a trustworthy Stellar transaction signer (and, by necessity, a pretty printer) using only Glasgow Haskell compiler code and Haskell Core libraries, reducing the possible supply chain attack surface.
 
 ## Installation and usage
