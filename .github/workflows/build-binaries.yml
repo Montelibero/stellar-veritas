@@ -67,6 +67,7 @@ jobs:
           if [ "${{ matrix.use_external_stellar_sdk }}" = "true" ]; then
             printf '%s\n' \
               'packages: .' \
+              'constraints: Cabal < 3.16' \
               '' \
               'source-repository-package' \
               '  type: git' \
