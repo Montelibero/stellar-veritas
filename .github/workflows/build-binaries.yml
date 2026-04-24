@@ -18,9 +18,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os:
-          - ubuntu-latest
-          - macos-13
+        include:
+          - os: ubuntu-latest
+            build_dir: .
+            cabal_file: stellar-veritas.cabal
+            artifact_os: linux
+          - os: macos-latest
+            build_dir: src
+            cabal_file: stellar-veritas.cabal
+            artifact_os: macos
 
     steps:
       - name: Check out repository
@@ -46,6 +52,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          cd "${{ matrix.build_dir }}"
           cabal update
           cabal build exe:stellar-veritas
 
@@ -54,20 +61,23 @@ jobs:
         run: |
           set -euo pipefail
 
-          version="$(awk '/^version:/ {print $2; exit}' stellar-veritas.cabal)"
+          cd "${{ matrix.build_dir }}"
+          version="$(awk '/^version:/ {print $2; exit}' "${{ matrix.cabal_file }}")"
           binary_path="$(cabal list-bin exe:stellar-veritas)"
 
-          os_name="$(echo "${RUNNER_OS}" | tr '[:upper:]' '[:lower:]')"
+          os_name="${{ matrix.artifact_os }}"
           arch_name="$(echo "${RUNNER_ARCH}" | tr '[:upper:]' '[:lower:]')"
           package_name="stellar-veritas-${version}-${os_name}-${arch_name}"
-          package_dir="dist/package/${package_name}"
-          archive_path="dist/${package_name}.tar.gz"
+          package_root="../dist/package"
+          archive_root="../dist"
+          package_dir="${package_root}/${package_name}"
+          archive_path="${archive_root}/${package_name}.tar.gz"
 
           mkdir -p "${package_dir}"
           install -m 755 "${binary_path}" "${package_dir}/stellar-veritas"
-          cp README.md COPYING "${package_dir}/"
+          cp ../README.md ../COPYING "${package_dir}/"
 
-          tar -C dist/package -czf "${archive_path}" "${package_name}"
+          tar -C "${package_root}" -czf "${archive_path}" "${package_name}"
 
           echo "ASSET_NAME=${package_name}.tar.gz" >> "${GITHUB_ENV}"
           echo "ASSET_PATH=${archive_path}" >> "${GITHUB_ENV}"
