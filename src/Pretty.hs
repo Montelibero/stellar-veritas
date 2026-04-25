@@ -10,14 +10,14 @@ import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import qualified Data.Vector as V
 import Network.ONCRPC.XDR.Array
-import Network.Stellar.Keypair (encodeKey, EncodingVersion(..))
+import Network.Stellar.Keypair (encodePublic)
 import Network.Stellar.TransactionXdr
 import Numeric
 
 b16 = T.pack . concatMap (\x -> (if x < 16 then "0" else "") ++ showHex x "") . B.unpack . unLengthArray
 b32 = encodeBase32 . unLengthArray
 utf8s = T.decodeUtf8Lenient . unLengthArray
-prettyKey x = encodeKey EncodingAccount $ unLengthArray x
+prettyKey x = encodePublic $ unLengthArray x
 prettyAmount amount = T.show ((fromIntegral amount) / 1e7)
 prettyUnlines x = T.concat $ intersperse "\n" x
 prettyAssetCode x = T.decodeUtf8Lenient $ B.takeWhile (/= 0) $ unLengthArray x
