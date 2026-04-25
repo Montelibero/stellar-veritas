@@ -14,11 +14,14 @@ import Network.Stellar.Keypair (encodePublic)
 import Network.Stellar.TransactionXdr
 import Numeric
 
+tshow :: Show a => a -> T.Text
+tshow = T.pack . show
+
 b16 = T.pack . concatMap (\x -> (if x < 16 then "0" else "") ++ showHex x "") . B.unpack . unLengthArray
 b32 = encodeBase32 . unLengthArray
 utf8s = T.decodeUtf8Lenient . unLengthArray
 prettyKey x = encodePublic $ unLengthArray x
-prettyAmount amount = T.show ((fromIntegral amount) / 1e7)
+prettyAmount amount = tshow ((fromIntegral amount) / 1e7)
 prettyUnlines x = T.concat $ intersperse "\n" x
 prettyAssetCode x = T.decodeUtf8Lenient $ B.takeWhile (/= 0) $ unLengthArray x
 
@@ -28,7 +31,7 @@ class Pretty a where
 instance Pretty TransactionEnvelope where
   pretty (TransactionEnvelope'ENVELOPE_TYPE_TX_V0 x) = pretty x
   pretty (TransactionEnvelope'ENVELOPE_TYPE_TX x) = pretty x
-  pretty (TransactionEnvelope'ENVELOPE_TYPE_TX_FEE_BUMP x) = T.concat ["Fee bump to ", T.show x]
+  pretty (TransactionEnvelope'ENVELOPE_TYPE_TX_FEE_BUMP x) = T.concat ["Fee bump to ", tshow x]
 
 instance Pretty TransactionV0Envelope where
   pretty x = pretty $ transactionV0Envelope'tx x
@@ -38,8 +41,8 @@ instance Pretty TransactionV1Envelope where
 
 instance Pretty TransactionV0 where
   pretty x = prettyUnlines $ map T.concat
-    [ ["Fee: ", T.show (transactionV0'fee x)]
-    , ["Sequence: ", T.show (transactionV0'seqNum x)]
+    [ ["Fee: ", tshow (transactionV0'fee x)]
+    , ["Sequence: ", tshow (transactionV0'seqNum x)]
     ]
 
 instance Pretty Transaction where
@@ -47,26 +50,26 @@ instance Pretty Transaction where
     [ ["Source account: ", pretty $ transaction'sourceAccount x]
     , ["Memo: ", pretty $ transaction'memo x]
     , ["Operations:\n", prettyUnlines $ map (\op -> T.concat ["  ", pretty op]) $ V.toList $ unLengthArray $ transaction'operations x]
-    , ["Fee: ", T.show (transaction'fee x), " stroops"]
-    , ["Sequence: ", T.show (transaction'seqNum x)]
+    , ["Fee: ", tshow (transaction'fee x), " stroops"]
+    , ["Sequence: ", tshow (transaction'seqNum x)]
     , ["Conditions: ", pretty (transaction'cond x)]
     ]
 
 instance Pretty Memo where
   pretty Memo'MEMO_NONE = ""
-  pretty (Memo'MEMO_ID x) = T.show x
+  pretty (Memo'MEMO_ID x) = tshow x
   pretty (Memo'MEMO_HASH x) = b16 x
-  pretty (Memo'MEMO_RETURN x) = T.show x
+  pretty (Memo'MEMO_RETURN x) = tshow x
   pretty (Memo'MEMO_TEXT t) = utf8s t
 
 instance Pretty Preconditions where
   pretty Preconditions'PRECOND_NONE = "None"
-  pretty (Preconditions'PRECOND_TIME (TimeBounds min max)) = T.concat ["Time ", T.show min, " to ", T.show max]
-  pretty (Preconditions'PRECOND_V2 cond) = T.show cond
+  pretty (Preconditions'PRECOND_TIME (TimeBounds min max)) = T.concat ["Time ", tshow min, " to ", tshow max]
+  pretty (Preconditions'PRECOND_V2 cond) = tshow cond
 
 instance Pretty ClaimPredicate where
   pretty ClaimPredicate'CLAIM_PREDICATE_UNCONDITIONAL = "Unconditional"
-  pretty x = T.show x
+  pretty x = tshow x
 
 instance Pretty Operation where
   pretty (Operation Nothing body) = pretty body
@@ -97,31 +100,31 @@ instance Pretty OperationBody where
   pretty (OperationBody'SET_TRUST_LINE_FLAGS x) = pretty x
 --  pretty (OperationBody'LIQUIDITY_POOL_DEPOSIT x) = pretty x
 --  pretty (OperationBody'LIQUIDITY_POOL_WITHDRAW x) = pretty x
-  pretty x = T.show x
+  pretty x = tshow x
 
 instance Pretty SetOptionsOp where
   pretty x = let prettyMaybe description prettifier x = pure $ T.concat ["    ", description, prettifier x] in
               T.concat ["Set options:\n", prettyUnlines $ catMaybes
               [ setOptionsOp'inflationDest x >>= prettyMaybe "Set inflation destination to " pretty
-              , setOptionsOp'clearFlags x >>= prettyMaybe "Clear flags: " T.show
-              , setOptionsOp'setFlags x >>= prettyMaybe "Set flags: " T.show
-              , setOptionsOp'masterWeight x >>= prettyMaybe "Master key weight: " T.show
-              , setOptionsOp'lowThreshold x >>= prettyMaybe "Low signing threshold: " T.show
-              , setOptionsOp'medThreshold x >>= prettyMaybe "Medium signing threshold: " T.show
-              , setOptionsOp'highThreshold x >>= prettyMaybe "High signing threshold: " T.show
-              , setOptionsOp'homeDomain x >>= prettyMaybe "Home domain: " T.show
+              , setOptionsOp'clearFlags x >>= prettyMaybe "Clear flags: " tshow
+              , setOptionsOp'setFlags x >>= prettyMaybe "Set flags: " tshow
+              , setOptionsOp'masterWeight x >>= prettyMaybe "Master key weight: " tshow
+              , setOptionsOp'lowThreshold x >>= prettyMaybe "Low signing threshold: " tshow
+              , setOptionsOp'medThreshold x >>= prettyMaybe "Medium signing threshold: " tshow
+              , setOptionsOp'highThreshold x >>= prettyMaybe "High signing threshold: " tshow
+              , setOptionsOp'homeDomain x >>= prettyMaybe "Home domain: " tshow
               , setOptionsOp'signer x >>= prettyMaybe "Signer: " pretty
               ]]
 
 instance Pretty Signer where
-  pretty (Signer key weight) = T.concat [pretty key, " (", T.show weight, ")"]
+  pretty (Signer key weight) = T.concat [pretty key, " (", tshow weight, ")"]
 
 instance Pretty SignerKey where
   pretty (SignerKey'SIGNER_KEY_TYPE_ED25519 x) = prettyKey x
-  pretty x = T.show x
+  pretty x = tshow x
 
 instance Pretty CreateAccountOp where
-  pretty (CreateAccountOp dest bal) = T.concat ["Create account ", pretty dest, " with starting balance ", T.show bal]
+  pretty (CreateAccountOp dest bal) = T.concat ["Create account ", pretty dest, " with starting balance ", tshow bal]
 
 instance Pretty CreateClaimableBalanceOp where
   pretty (CreateClaimableBalanceOp ass amount claimants) = T.concat ["Create claimable ", prettyAmount amount, " ", pretty ass, " to ", pretty claimants]
@@ -130,10 +133,10 @@ instance Pretty SetTrustLineFlagsOp where
   pretty (SetTrustLineFlagsOp trustor ass clearFlags setFlags)
     | setFlags == 1 && clearFlags == 0 = T.concat ["Authorize ", pretty trustor, " ops with asset ", pretty ass]
     | setFlags == 0 && clearFlags == 1 = T.concat ["Clear authorization ", pretty trustor, " ops with asset ", pretty ass]
-    | otherwise = T.concat ["Set trust line of ", pretty trustor, " to asset ", pretty ass, ": set flags ", T.show setFlags, ", clear flags ", T.show clearFlags]
+    | otherwise = T.concat ["Set trust line of ", pretty trustor, " to asset ", pretty ass, ": set flags ", tshow setFlags, ", clear flags ", tshow clearFlags]
 
 instance Pretty ChangeTrustOp where
-  pretty (ChangeTrustOp line limit) = T.concat ["Trust ", pretty line, " up to ", T.show limit]
+  pretty (ChangeTrustOp line limit) = T.concat ["Trust ", pretty line, " up to ", tshow limit]
 
 instance Pretty PaymentOp where
   pretty (PaymentOp dest ass amount) = T.concat ["Pay ", prettyAmount amount, " ", pretty ass, " to ", pretty dest]
@@ -143,20 +146,20 @@ instance Pretty ManageDataOp where
   pretty (ManageDataOp name (Just value)) = T.concat ["Data ", utf8s name, " = ", utf8s value]
 
 instance Pretty ManageBuyOfferOp where
-  pretty (ManageBuyOfferOp sellass buyass buyamount price offerid) = T.concat ["Buy ", prettyAmount buyamount, " ", pretty buyass, " for ", pretty sellass, " price ", pretty price, " ", prettyAssetName sellass, "/", prettyAssetName buyass, if offerid == 0 then " (new offer)" else T.concat [" (update offer ", T.show offerid, ")"]]
+  pretty (ManageBuyOfferOp sellass buyass buyamount price offerid) = T.concat ["Buy ", prettyAmount buyamount, " ", pretty buyass, " for ", pretty sellass, " price ", pretty price, " ", prettyAssetName sellass, "/", prettyAssetName buyass, if offerid == 0 then " (new offer)" else T.concat [" (update offer ", tshow offerid, ")"]]
 
 instance Pretty ManageSellOfferOp where
-  pretty (ManageSellOfferOp sellass buyass sellamount price offerid) = T.concat ["Sell ", prettyAmount sellamount, " ", pretty sellass, " for ", pretty buyass, " price ", pretty price, " ", prettyAssetName buyass, "/", prettyAssetName sellass, if offerid == 0 then " (new offer)" else T.concat [" (update offer ", T.show offerid, ")"]]
+  pretty (ManageSellOfferOp sellass buyass sellamount price offerid) = T.concat ["Sell ", prettyAmount sellamount, " ", pretty sellass, " for ", pretty buyass, " price ", pretty price, " ", prettyAssetName buyass, "/", prettyAssetName sellass, if offerid == 0 then " (new offer)" else T.concat [" (update offer ", tshow offerid, ")"]]
 
 instance Pretty Price where
-  pretty (Price numerator denominator) = T.show $ fromIntegral numerator / fromIntegral denominator
+  pretty (Price numerator denominator) = tshow $ fromIntegral numerator / fromIntegral denominator
 
 instance Pretty ClawbackOp where
   pretty (ClawbackOp ass acc amount) = T.concat ["Clawback ", prettyAmount amount, " ", pretty ass, " from ", pretty acc]
 
 instance Pretty MuxedAccount where
   pretty (MuxedAccount'KEY_TYPE_ED25519 x) = prettyKey x
-  pretty (MuxedAccount'KEY_TYPE_MUXED_ED25519 id key) = T.concat [b32 key, " (", T.show id, ")"]
+  pretty (MuxedAccount'KEY_TYPE_MUXED_ED25519 id key) = T.concat [b32 key, " (", tshow id, ")"]
 
 instance Pretty PublicKey where
   pretty (PublicKey'PUBLIC_KEY_TYPE_ED25519 x) = prettyKey x
