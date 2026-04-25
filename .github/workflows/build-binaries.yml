@@ -107,9 +107,10 @@ jobs:
           archive_root="${{ matrix.archive_root }}"
           repo_root="${{ matrix.repo_root }}"
           package_dir="${package_root}/${package_name}"
-          archive_path="${archive_root}/${package_name}.tar.gz"
 
           mkdir -p "${package_dir}"
+          archive_dir="$(cd "${archive_root}" && pwd)"
+          archive_path="${archive_dir}/${package_name}.tar.gz"
           install -m 755 "${binary_path}" "${package_dir}/stellar-veritas"
           cp "${repo_root}/README.md" "${repo_root}/COPYING" "${package_dir}/"
 
