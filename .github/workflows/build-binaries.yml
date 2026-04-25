@@ -28,6 +28,15 @@ jobs:
             archive_root: dist
             use_external_stellar_sdk: false
             ghc_version: 9.12.3
+          - os: ubuntu-24.04-arm
+            build_dir: .
+            cabal_file: stellar-veritas.cabal
+            artifact_os: linux
+            repo_root: .
+            package_root: dist/package
+            archive_root: dist
+            use_external_stellar_sdk: false
+            ghc_version: 9.12.3
           - os: macos-latest
             build_dir: src
             cabal_file: stellar-veritas.cabal
