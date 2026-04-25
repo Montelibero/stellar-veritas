@@ -46,6 +46,15 @@ jobs:
             archive_root: ../dist
             use_external_stellar_sdk: true
             ghc_version: 9.8.4
+          - os: macos-13
+            build_dir: src
+            cabal_file: stellar-veritas.cabal
+            artifact_os: macos
+            repo_root: ..
+            package_root: ../dist/package
+            archive_root: ../dist
+            use_external_stellar_sdk: true
+            ghc_version: 9.8.4
 
     steps:
       - name: Check out repository
